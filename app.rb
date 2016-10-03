@@ -68,6 +68,8 @@ class Fooods < Sinatra::Base
     else
       nil
     end
+  rescue ArgumentError
+    nil
   end
 
   get '/screen.css' do
