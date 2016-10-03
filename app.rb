@@ -51,6 +51,25 @@ class Fooods < Sinatra::Base
     end
   end
 
+  def parse_date(str)
+    case str.strip
+    when /\A(\d?\d)(\d\d)\z/
+      today = Date.today
+      m, d = $1.to_i, $2.to_i
+      date = Date.new(today.year, m, d)
+      date = Date.new(today.year + 1, m, d) if date < today
+      date
+    when /\A(\d\d)(\d?\d)(\d\d)\z/
+      y, m, d = $1.to_i, $2.to_i, $3.to_i
+      Date.new(y + 2000, m, d)
+    when /\A(\d\d\d\d)(\d?\d)(\d\d)\z/
+      y, m, d = $1.to_i, $2.to_i, $3.to_i
+      Date.new(y, m, d)
+    else
+      nil
+    end
+  end
+
   get '/screen.css' do
     sass :screen  # renders views/screen.sass as screen.css
   end
@@ -68,15 +87,8 @@ class Fooods < Sinatra::Base
 
     name = String(params["name"])
     @errors << "name is empty" if name.empty?
-    date = if String(params["date"]).empty?
-             ""
-           else
-             begin
-               Date.parse(String(params["date"])).to_s
-             rescue ArgumentError
-               @errors << "failed to parse date: #{params['date'].inspect}"
-             end
-           end
+    date = parse_date(String(params["date"]))
+    @errors << "failed to parse date: #{params['date'].inspect}" unless date
 
     if @errors.any?
       session[:errors] = @errors
