@@ -1,0 +1,92 @@
+require 'csv'
+require 'fileutils'
+require 'date'
+
+require 'sinatra/base'
+require 'sinatra/reloader'
+require 'slim'
+require 'sass'
+
+class Fooods < Sinatra::Base
+  configure(:development){ register Sinatra::Reloader }
+  enable :sessions
+
+  class Database
+    DB = File.expand_path("./db/fooods.csv", __dir__)
+
+    def initialize
+      FileUtils.touch(DB) unless File.exist?(DB)
+      @rows = CSV.parse(File.read(DB))
+    end
+    attr_reader :rows
+
+    def update_or_insert(name, *args)
+      if (a = @rows.find{|x| x[0] == name})
+        a[1..-1] = args
+      else
+        @rows.push([name, *args])
+      end
+      save
+    end
+
+    def delete(name)
+      if (a = @rows.find{|x| x[0] == name})
+        @rows.delete(a)
+      end
+      save
+    end
+
+    private
+
+    def save
+      File.open(DB, "r+") do |f|
+        begin
+          f.flock(File::LOCK_EX)
+          f.rewind; f.truncate(0)
+          f.write @rows.map(&:to_csv).join
+        ensure
+          f.flock(File::LOCK_UN)
+        end
+      end
+    end
+  end
+
+  get '/screen.css' do
+    sass :screen  # renders views/screen.sass as screen.css
+  end
+
+  get '/' do
+    @db = Database.new
+    @rows = @db.rows.sort_by{|name, date, to_by| String(date)}
+    @errors = session[:errors]; session[:errors] = nil
+    slim :index  # renders views/index.slim
+  end
+
+  post '/save' do
+    @db = Database.new
+    @errors = []
+
+    name = String(params["name"])
+    @errors << "name is empty" if name.empty?
+    date = if String(params["date"]).empty?
+             ""
+           else
+             begin
+               Date.parse(String(params["date"])).to_s
+             rescue ArgumentError
+               @errors << "failed to parse date: #{params['date'].inspect}"
+             end
+           end
+
+    if @errors.any?
+      session[:errors] = @errors
+    else
+      if params["submit_by"] == "Delete"
+        @db.delete(name)
+      else
+        @db.update_or_insert(name, date, params["to_buy"])
+      end
+    end
+    redirect "/"
+  end
+end

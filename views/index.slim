@@ -1,0 +1,62 @@
+h1 Fooods
+
+- if Array(@errors).any?
+  ul.error
+    - @errors.each do |msg|
+      li= msg
+
+div
+  form action='save' method='post'
+    | Name:
+    input type='text' name='name'
+    br
+
+    | Date:
+    input type='text' name='date'
+    br
+
+    label
+      input type='checkbox' name='to_buy' value="yes"
+        | To buy
+    br
+    
+    input type="submit" name='submit_by' value="Save"
+    input type="submit" name='submit_by' value="Delete"
+hr
+
+table.foods
+  tr
+    th name
+    th date
+    th to buy
+
+  - @rows.each do |name, date, to_buy|
+    tr
+      td= name
+      td= date
+      td= to_buy
+      td
+        a.edit href="#" edit
+      td
+        a.delete href="#" delete
+
+javascript:
+  function setOnClick(isDelete) {
+    return function(a) {
+      a.onclick = function() {
+        var td = a.parentNode.previousSibling;
+        if (isDelete) { td = td.previousSibling; }
+        var to_buy = td.innerText;
+        td = td.previousSibling;
+        var date = td.innerText;
+        td = td.previousSibling;
+        var name = td.innerText;
+
+        document.querySelector("input[name=name]").value = name;
+        document.querySelector("input[name=date]").value = date;
+        document.querySelector("input[name=to_buy]").checked = (to_buy == "yes");
+      }
+    }
+  }
+  document.querySelectorAll("a.edit").forEach(setOnClick(false));
+  document.querySelectorAll("a.delete").forEach(setOnClick(true));
