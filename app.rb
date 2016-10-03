@@ -95,7 +95,7 @@ class Fooods < Sinatra::Base
     date = if date_str.empty?
              ""
            else
-             parse_date(date)
+             parse_date(date_str)
            end
     @errors << "failed to parse date: #{params['date'].inspect}" unless date
 
