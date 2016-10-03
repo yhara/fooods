@@ -87,6 +87,6 @@ class Fooods < Sinatra::Base
         @db.update_or_insert(name, date, params["to_buy"])
       end
     end
-    redirect "/"
+    redirect back
   end
 end
