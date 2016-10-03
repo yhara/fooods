@@ -1,9 +1,13 @@
 h1 Fooods
 
 - if Array(@errors).any?
-  ul.error
+  ul
     - @errors.each do |msg|
-      li= msg
+      li.error= msg
+- if Array(@notices).any?
+  ul
+    - @notices.each do |msg|
+      li.notice= msg
 
 div
   form action='save' method='post'

@@ -80,12 +80,14 @@ class Fooods < Sinatra::Base
     @db = Database.new
     @rows = @db.rows.sort_by{|name, date, to_by| String(date)}
     @errors = session[:errors]; session[:errors] = nil
+    @notices = session[:notices]; session[:notices] = nil
     slim :index  # renders views/index.slim
   end
 
   post '/save' do
     @db = Database.new
     @errors = []
+    @notices = []
 
     name = String(params["name"])
     @errors << "name is empty" if name.empty?
@@ -97,9 +99,12 @@ class Fooods < Sinatra::Base
     else
       if params["submit_by"] == "Delete"
         @db.delete(name)
+        @notices << "Deleted '#{name}'"
       else
-        @db.update_or_insert(name, date, params["to_buy"])
+        @db.update_or_insert(name, date.to_s, params["to_buy"])
+        @notices << "Registered '#{name}' (#{date})"
       end
+      session[:notices] = @notices
     end
     redirect back
   end
