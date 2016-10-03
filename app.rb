@@ -16,7 +16,7 @@ class Fooods < Sinatra::Base
 
     def initialize
       FileUtils.touch(DB) unless File.exist?(DB)
-      @rows = CSV.parse(File.read(DB))
+      @rows = CSV.parse(File.read(DB, encoding: "utf-8"))
     end
     attr_reader :rows
 
