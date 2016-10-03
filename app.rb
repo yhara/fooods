@@ -91,7 +91,12 @@ class Fooods < Sinatra::Base
 
     name = String(params["name"])
     @errors << "name is empty" if name.empty?
-    date = parse_date(String(params["date"]))
+    date_str = String(params["date"])
+    date = if date_str.empty?
+             ""
+           else
+             parse_date(date)
+           end
     @errors << "failed to parse date: #{params['date'].inspect}" unless date
 
     if @errors.any?
