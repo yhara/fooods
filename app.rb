@@ -74,7 +74,8 @@ class Fooods < Sinatra::Base
 
   helpers do
     def freshness(date)
-      d = Date.parse(date)
+      d = Date.parse(date) rescue nil
+      return "fresh" if d.nil?
       t = Date.today
       case
       when d < t then "stale"
