@@ -35,7 +35,7 @@ h1.title Fooods
       th to buy
 
     - @rows.each do |name, date, to_buy|
-      tr
+      tr class=(freshness(date))
         td= name
         td= date
         td= to_buy

@@ -72,6 +72,18 @@ class Fooods < Sinatra::Base
     nil
   end
 
+  helpers do
+    def freshness(date)
+      d = Date.parse(date)
+      t = Date.today
+      case
+      when d < t then "stale"
+      when d < t + 30 then "unfresh"
+      else "fresh"
+      end
+    end
+  end
+
   get '/screen.css' do
     sass :screen  # renders views/screen.sass as screen.css
   end
