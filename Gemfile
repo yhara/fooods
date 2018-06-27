@@ -8,6 +8,7 @@ gem 'sass'
 group :development do
   gem 'rake'
   gem 'capistrano', '>= 3'
+  gem 'capistrano-rails'
   gem 'capistrano-bundler'
   gem 'capistrano-rbenv'
   gem 'capistrano-passenger'
