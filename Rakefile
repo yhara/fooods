@@ -1,4 +1,3 @@
-require "sinatra/activerecord/rake"
 require 'irb'
 
 namespace :db do
