@@ -7,7 +7,7 @@ Manages what's in my fridge
 
 ## Requirements
 
-- Ruby 2.x (Tested with 2.3)
+- Ruby 2.x (Tested with 2.5)
 
 ## License
 
